@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="theme-color" content="#faf7f2" />
+<title>墨匣 · AI 小说创作管理工作台</title>
+<meta name="description" content="记录和管理小说创作灵感：人物档案、灵感收集箱、一键整理导出" />
+<link rel="stylesheet" href="./styles.css" />
+<link rel="manifest" href="./manifest.json" />
+
+<!-- 手机桌面 App 支持 -->
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="墨匣" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="format-detection" content="telephone=no" />
+<link rel="apple-touch-icon" href="./icon-180.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+<link rel="icon" href="./icon.svg" type="image/svg+xml" />
+</head>
+<body>
+  <div id="app">
+    <!-- 首页 -->
+    <section id="view-home" class="view">
+      <header class="home-header">
+        <div class="brand">
+          <span class="brand-mark">墨匣</span>
+          <div class="brand-sub">AI 小说创作管理工作台</div>
+        </div>
+        <button class="btn btn-primary" id="btn-new-novel">＋ 新建小说</button>
+      </header>
+
+      <div class="home-body">
+        <div class="section-title">创作中 <span class="count" id="count-active"></span></div>
+        <div class="novel-grid" id="novel-list"></div>
+
+        <div class="section-title archive-title" id="archive-section" style="display:none">
+          已归档 <span class="count" id="count-archived"></span>
+        </div>
+        <div class="novel-grid" id="novel-archive-list"></div>
+
+        <div class="empty-state" id="home-empty" style="display:none">
+          <div class="empty-quill">✒︎</div>
+          <p class="empty-title">还没有小说</p>
+          <p class="empty-desc">创建第一本小说，开始记录人物与灵感。</p>
+          <button class="btn btn-primary" id="btn-new-novel-2">创建小说</button>
+        </div>
+
+        <footer class="home-foot" id="home-foot">
+          <div class="foot-line" id="foot-tip">正在读取…</div>
+        </footer>
+      </div>
+    </section>
+
+    <!-- 小说详情 -->
+    <section id="view-novel" class="view" style="display:none">
+      <header class="novel-header">
+        <button class="icon-btn" id="btn-back" title="返回书架">‹</button>
+        <div class="novel-title-wrap">
+          <h1 id="novel-title">—</h1>
+          <div class="novel-meta" id="novel-meta"></div>
+        </div>
+        <button class="icon-btn" id="btn-novel-menu" title="更多">⋯</button>
+      </header>
+
+      <nav class="tabs" id="tabs">
+        <button class="tab active" data-tab="characters">人物管理</button>
+        <button class="tab" data-tab="ideas">灵感收集箱</button>
+      </nav>
+
+      <div class="panels">
+        <!-- 人物 -->
+        <div class="panel active" id="panel-characters">
+          <button class="new-char-btn" id="btn-new-character">
+            <span class="nc-plus">＋</span>
+            <span class="nc-text">
+              <b>新建人物</b>
+              <em>输入一句话设定，AI 自动建档；也可直接建空白档案</em>
+            </span>
+          </button>
+
+          <div class="quick-input">
+            <div class="qi-title">补充已有的人物设定</div>
+            <textarea id="char-input" rows="3" placeholder="继续补充某个人的信息，例如：宪法是一个医生。&#10;宪法小时候在孤儿院长大。"></textarea>
+            <div class="quick-input-bar">
+              <span class="hint">AI 自动识别姓名、身份、生日等信息，未提到的留空，可随时补充</span>
+              <button class="btn btn-primary" id="btn-char-parse">识别并归档</button>
+            </div>
+          </div>
+          <div id="char-parse-result"></div>
+          <div class="organize-bar">
+            <button class="btn btn-organize" id="btn-organize-characters">🗂 一键整理人物</button>
+            <span class="hint">把这本小说的全部人物档案汇总成一份文档，可复制 / 导出</span>
+          </div>
+          <div class="list-head">人物档案 <span class="count" id="count-characters"></span></div>
+          <div class="card-list" id="character-list"></div>
+          <div class="empty-state small" id="char-empty" style="display:none">
+            <p class="empty-desc">还没有人物档案。<br />点上方「＋ 新建人物」，输入一句话就能建档。</p>
+          </div>
+        </div>
+
+        <!-- 灵感 -->
+        <div class="panel" id="panel-ideas">
+          <div class="quick-input">
+            <textarea id="idea-input" rows="3" placeholder="想到什么就记一条，例如：男主其实早就认识女主。"></textarea>
+            <div class="quick-input-bar">
+              <span class="hint">每条独立保存，随时可用「一键整理」汇总</span>
+              <button class="btn btn-primary" id="btn-idea-add">记下灵感</button>
+            </div>
+          </div>
+          <div class="organize-bar">
+            <button class="btn btn-organize" id="btn-organize">🗂 一键整理</button>
+            <span class="hint">按原始顺序，把全部灵感原文集中到一份文档</span>
+          </div>
+          <div class="list-head">灵感记录 <span class="count" id="count-ideas"></span></div>
+          <div class="entry-list" id="idea-list"></div>
+          <div class="empty-state small" id="idea-empty" style="display:none">
+            <p class="empty-desc">灵感箱还是空的。</p>
+          </div>
+        </div>
+      </div>
+
+      <button class="fab" id="fab" title="快速输入">✎</button>
+    </section>
+
+    <!-- 文档视图 -->
+    <section id="view-doc" class="view" style="display:none">
+      <header class="novel-header">
+        <button class="icon-btn" id="btn-doc-back" title="返回">‹</button>
+        <div class="novel-title-wrap">
+          <h1 id="doc-title">整理文档</h1>
+          <div class="novel-meta" id="doc-meta"></div>
+        </div>
+        <button class="icon-btn" id="btn-doc-refresh" title="再次生成">↻</button>
+      </header>
+      <div class="doc-toolbar">
+        <button class="chip-btn" id="btn-copy-doc">一键复制全文</button>
+        <button class="chip-btn" id="btn-edit-doc">全文编辑</button>
+        <button class="chip-btn" id="btn-export-txt">导出 TXT</button>
+        <button class="chip-btn" id="btn-export-word">导出 Word</button>
+        <button class="chip-btn" id="btn-regenerate">再次生成</button>
+      </div>
+      <div class="doc-body">
+        <textarea id="doc-content" spellcheck="false"></textarea>
+      </div>
+      <div class="doc-foot">
+        <button class="btn btn-primary" id="btn-save-doc" style="display:none">保存修改</button>
+        <button class="btn btn-ghost" id="btn-cancel-edit" style="display:none">取消</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast" class="toast"></div>
+
+  <script src="./parser.js"></script>
+  <script src="./local-api.js"></script>
+  <script src="./app.js"></script>
+  <script src="./web-extra.js"></script>
+</body>
+</html>
